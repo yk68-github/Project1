@@ -198,12 +198,18 @@ void MontyFrame::makeTests()
                totalSteps += step;
                if (numThreads > 3)
                {
-                   for (int j = 0; j < numThreads -2; j++)
+                   for (unsigned int j = 0; (j < (numThreads-2)) && (i<100); j++) // tester si i > 100
                    {
                         std::thread t(&Logic::executeSimulation, logic, step);
-                        t.join();
+                        VThread.push_back(std::move(t));
                         i++;
                         GaugeSimulation->SetValue(i);
+                   }
+                   for (std::thread& th : VThread)
+                   {
+                       // If thread Object is Joinable then Join that thread.
+                       if (th.joinable())
+                           th.join();
                    }
                }
                else
