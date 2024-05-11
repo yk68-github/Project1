@@ -200,10 +200,10 @@ void MontyFrame::makeTests()
                {
                    for (int j = 0; j < numThreads -2; j++)
                    {
-                   std::thread();
-                   logic->executeSimulation(step);
-                   i++;
-                   GaugeSimulation->SetValue(i);
+                        std::thread t(&Logic::executeSimulation, logic, step);
+                        t.join();
+                        i++;
+                        GaugeSimulation->SetValue(i);
                    }
                }
                else
