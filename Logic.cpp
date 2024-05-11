@@ -86,39 +86,34 @@ bool Logic::executeSimulation(int numberOfSimulations)
 
         int firstChoice = -1;
         int newChoice = -1;
-
-        // Choix sans changement
+        int oneGoat = 0;
 
         for(int i = 0; i<numberOfSimulations; i++)
         {
             firstChoice = rand()%numberOfDoors;
+
+            // Choix sans changement
             if (situation.at(firstChoice)==CAR)
             {
                 successWithoutChanges++;
             }
-        }
-
-        // Choix avec changement
-
-        int oneGoat = 0;
-        for(int i = 0; i<numberOfSimulations; i++)
-        {
-            firstChoice = rand()%numberOfDoors;
+            
+            // Choix avec changement
+            do
+            {
+               oneGoat = rand() % numberOfDoors;
+            } while ((situation.at(oneGoat) != GOAT) || (firstChoice == oneGoat));
 
             do
             {
-                oneGoat = rand()%numberOfDoors;
-            } while ( (situation.at(oneGoat)!=GOAT) || (firstChoice==oneGoat) );
+                newChoice = rand() % numberOfDoors;
+            } while ((newChoice == firstChoice) || (newChoice == oneGoat));
 
-            do
-            {
-                newChoice = rand()%numberOfDoors;
-            } while ( (newChoice==firstChoice) || (newChoice==oneGoat) );
-
-            if (situation.at(newChoice)==CAR)
+            if (situation.at(newChoice) == CAR)
             {
                 successWithChanges++;
             }
-    }
+        }
+    
    return true;
 }

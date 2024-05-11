@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <random>
 #include <ctime>
+#include <thread>
+#include <mutex>
+#include <functional>
 
 #define MAXGOATS  8
 #define MINGOATS  2
