@@ -28,6 +28,9 @@
 #include <wx/log.h>
 #include <vector>
 #include <wx/event.h>
+#include <wx/log.h>
+#include <vector>
+
 #include "Logic.h"
 
 #define OKFORGAUGE 200

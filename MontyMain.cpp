@@ -174,8 +174,12 @@ void MontyFrame::makeTests()
 {
     bool result = false;
     int numberOfTries = SpinTries->GetValue();
+
     int successWithChange = 0;
     int successWithoutChange = 0;
+    
+    std::mutex mut_Success;
+    unsigned int numThreads = std::thread::hardware_concurrency();
 
     try
     {
@@ -184,23 +188,42 @@ void MontyFrame::makeTests()
 
         if (numberOfTries > OKFORGAUGE)
         {
+            std::vector<std::thread> VThread;
             int step = numberOfTries / 100;
             int totalSteps = 0;
-            for(int i = 0; i < 99; i++)
+            int i = 0;
+            while (i < 99)
             {
+               VThread.clear();
                totalSteps += step;
-               result = logic->executeSimulation(step);
-               GaugeSimulation->SetValue(i);
+               if (numThreads > 3)
+               {
+                   for (int j = 0; j < numThreads -2; j++)
+                   {
+                   std::thread();
+                   logic->executeSimulation(step);
+                   i++;
+                   GaugeSimulation->SetValue(i);
+                   }
+               }
+               else
+               {
+                   logic->executeSimulation(step);
+                   i++;
+                   GaugeSimulation->SetValue(i);
+               }
+               
                successWithoutChange=successWithoutChange+logic->getSuccessWithoutChanges();
                successWithChange=successWithChange+logic->getSuccessWithChanges();
+               i++;
             }
-               result = logic->executeSimulation(numberOfTries-totalSteps);
+               logic->executeSimulation(numberOfTries-totalSteps);
                successWithoutChange=successWithoutChange+logic->getSuccessWithoutChanges();
                successWithChange=successWithChange+logic->getSuccessWithChanges();
         }
             else
             {
-                result = logic->executeSimulation(numberOfTries);
+               logic->executeSimulation(numberOfTries);
                 successWithoutChange=logic->getSuccessWithoutChanges();
                 successWithChange=logic->getSuccessWithChanges();
             }

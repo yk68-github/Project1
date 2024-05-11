@@ -66,9 +66,12 @@ std::vector<int> Logic::shuffleSample(std::vector<int> s)
     return s;
 }
 
-bool Logic::executeSimulation(int numberOfSimulations)
+void Logic::executeSimulation(int numberOfSimulations)
 {
-  if (numberOfSimulations<=0) return false;
+    if (numberOfSimulations <= 0)
+    {
+      throw std::invalid_argument("Le nombre de simulations demandé à la fonction de test ne peut être inférieur à zéro.");
+    }
 
     successWithChanges = 0;
     failureWithChanges = 0;
@@ -114,6 +117,4 @@ bool Logic::executeSimulation(int numberOfSimulations)
                 successWithChanges++;
             }
         }
-    
-   return true;
 }

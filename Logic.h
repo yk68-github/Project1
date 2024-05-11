@@ -33,7 +33,7 @@ class Logic
         const int getFailureWithChanges() {return failureWithChanges; };
         const int getSuccessWithoutChanges() {return successWithoutChanges; };
         const int getFailureWithoutChanges() {return failureWithoutChanges; };
-        bool executeSimulation(int);
+        void executeSimulation(int);
 
     protected:
 
