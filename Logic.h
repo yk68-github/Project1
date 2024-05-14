@@ -27,7 +27,7 @@ class Logic
         void setNumberOfCars(const int);
         const int getNumberOfCars();
         std::vector<int> shuffleSample(std::vector<int> s);
-        void executeSimulation(int, int&, int&);
+        void executeSimulation(int, int, int&, int&);
 
     protected:
 

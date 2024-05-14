@@ -66,15 +66,14 @@ std::vector<int> Logic::shuffleSample(std::vector<int> s)
     return s;
 }
 
-void Logic::executeSimulation(int numberOfSimulations, int& successWithoutChanges, int& successWithChanges)
+void Logic::executeSimulation(int seed, int numberOfSimulations, int& successWithoutChanges, int& successWithChanges)
 {
   if (numberOfSimulations<=0) 
   {
       throw std::invalid_argument("Erreur de logique interne au programme.  Le nombre de simulations doit être supérieur à zéro");
   }
 
-    srand((int)time(NULL) + successWithChanges);
-    std::mt19937 eng((int)std::time(NULL) + successWithChanges);
+    srand((int)time(NULL) + seed);
   
     m_successWithChanges = 0;
     m_successWithoutChanges = 0;

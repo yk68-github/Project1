@@ -168,51 +168,48 @@ void MontyFrame::OnAbout(wxCommandEvent& event)
 
 void MontyFrame::makeTests()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd()); // Mersenne Twister engine
+    srand((int)time(NULL));
+    int seed = rand();
     int numberOfTries = SpinTries->GetValue();
     int successWithChange = 0;
     int successWithoutChange = 0;
     Logic logic;
+    int step = 0;
     std::vector<std::thread> VThread;
     std::vector<int> VSuccessWithChanges(PERCENT);
     std::vector<int> VSuccessWithoutChanges(PERCENT);
-    std::uniform_int_distribution<int> dist(0, 100000);
-    for (int i = 0; i < VSuccessWithChanges.size(); ++i) {
-        VSuccessWithChanges[i] = dist(gen);
-    }
 
     unsigned int numThreads = std::thread::hardware_concurrency();
 
     try
     {
+
         logic.setNumberOfGoats(Spingoats->GetValue());
         logic.setNumberOfCars(SpinCars->GetValue());
 
-        int step = numberOfTries / PERCENT;
+        step = numberOfTries / PERCENT;
         int totalSteps = 0;
         int indice = 0;
 
-
+/*
         for (indice = 0; indice < PERCENT; indice++)
         {
-            logic.executeSimulation(step,
+            logic.executeSimulation(seed+indice, step,
                 std::ref(VSuccessWithoutChanges[indice]),
                 std::ref(VSuccessWithChanges[indice]));
         }
-
-        /*
+*/
             while (indice < (PERCENT-1))
             {
-                totalSteps += step;
                 for (unsigned int j = 0; (j < (numThreads)) && (indice < 100); j++) // tester si i > 100
                 {
                     VThread.push_back(
-                    std::thread(&Logic::executeSimulation, logic, step, 
+                    std::thread(&Logic::executeSimulation, logic, seed+indice, step, 
                             std::ref(VSuccessWithoutChanges[indice]), 
                             std::ref(VSuccessWithChanges[indice]))
                         );
                     indice++;
+                    totalSteps += step;
                     GaugeSimulation->SetValue(indice);
                 }
                 for (std::thread& th : VThread)
@@ -221,7 +218,13 @@ void MontyFrame::makeTests()
                         th.join();
                 }
             }
-        */
+ 
+            if (numberOfTries - totalSteps > 0)
+            {
+                logic.executeSimulation(seed + 1, numberOfTries - totalSteps,
+                    std::ref(VSuccessWithoutChanges[PERCENT - 1]),
+                    std::ref(VSuccessWithChanges[PERCENT - 1]));
+            }
     }
     catch(const std::invalid_argument& e)
     {
@@ -245,8 +248,8 @@ void MontyFrame::makeTests()
     wxString display = wxString::Format("Nombre de réussites sans changement = %d", successWithoutChange);
     STNoChangeResult->SetLabel(display);
     display = wxString::Format("Nombre de réussites avec changement = %d", successWithChange);
+    //display = wxString::Format("step = %d", step);
     STChangeResult->SetLabel(display);
- 
         
 }
 
