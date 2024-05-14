@@ -148,15 +148,11 @@ MontyFrame::MontyFrame(wxWindow* parent,wxWindowID id)
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&MontyFrame::OnQuit);
     Connect(Informationsurlapplication,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&MontyFrame::OnAbout);
     //*)
-
-    logic = new Logic();
 }
 
 MontyFrame::~MontyFrame()
 {
-    //(*Destroy(MontyFrame)
-    //*)
-    delete logic;
+    Destroy();
 }
 
 void MontyFrame::OnQuit(wxCommandEvent& event)
@@ -172,38 +168,60 @@ void MontyFrame::OnAbout(wxCommandEvent& event)
 
 void MontyFrame::makeTests()
 {
-    bool result = false;
+    std::random_device rd;
+    std::mt19937 gen(rd()); // Mersenne Twister engine
     int numberOfTries = SpinTries->GetValue();
     int successWithChange = 0;
     int successWithoutChange = 0;
+    Logic logic;
+    std::vector<std::thread> VThread;
+    std::vector<int> VSuccessWithChanges(PERCENT);
+    std::vector<int> VSuccessWithoutChanges(PERCENT);
+    std::uniform_int_distribution<int> dist(0, 100000);
+    for (int i = 0; i < VSuccessWithChanges.size(); ++i) {
+        VSuccessWithChanges[i] = dist(gen);
+    }
+
+    unsigned int numThreads = std::thread::hardware_concurrency();
 
     try
     {
-        logic->setNumberOfGoats(Spingoats->GetValue());
-        logic->setNumberOfCars(SpinCars->GetValue());
+        logic.setNumberOfGoats(Spingoats->GetValue());
+        logic.setNumberOfCars(SpinCars->GetValue());
 
-        if (numberOfTries > OKFORGAUGE)
+        int step = numberOfTries / PERCENT;
+        int totalSteps = 0;
+        int indice = 0;
+
+
+        for (indice = 0; indice < PERCENT; indice++)
         {
-            int step = numberOfTries / 100;
-            int totalSteps = 0;
-            for(int i = 0; i < 99; i++)
-            {
-               totalSteps += step;
-               result = logic->executeSimulation(step);
-               GaugeSimulation->SetValue(i);
-               successWithoutChange=successWithoutChange+logic->getSuccessWithoutChanges();
-               successWithChange=successWithChange+logic->getSuccessWithChanges();
-            }
-               result = logic->executeSimulation(numberOfTries-totalSteps);
-               successWithoutChange=successWithoutChange+logic->getSuccessWithoutChanges();
-               successWithChange=successWithChange+logic->getSuccessWithChanges();
+            logic.executeSimulation(step,
+                std::ref(VSuccessWithoutChanges[indice]),
+                std::ref(VSuccessWithChanges[indice]));
         }
-            else
+
+        /*
+            while (indice < (PERCENT-1))
             {
-                result = logic->executeSimulation(numberOfTries);
-                successWithoutChange=logic->getSuccessWithoutChanges();
-                successWithChange=logic->getSuccessWithChanges();
+                totalSteps += step;
+                for (unsigned int j = 0; (j < (numThreads)) && (indice < 100); j++) // tester si i > 100
+                {
+                    VThread.push_back(
+                    std::thread(&Logic::executeSimulation, logic, step, 
+                            std::ref(VSuccessWithoutChanges[indice]), 
+                            std::ref(VSuccessWithChanges[indice]))
+                        );
+                    indice++;
+                    GaugeSimulation->SetValue(indice);
+                }
+                for (std::thread& th : VThread)
+                {
+                    if (th.joinable())
+                        th.join();
+                }
             }
+        */
     }
     catch(const std::invalid_argument& e)
     {
@@ -213,22 +231,23 @@ void MontyFrame::makeTests()
     catch(...)
     {
         wxLogWarning("Une erreur indéterminée s'est produite dans le module logique.");
-        result = false;
     }
 
     GaugeSimulation->SetValue(0);
     GaugeSimulation->Refresh();
     GaugeSimulation->Update();
-    wxString display;
 
-    if (result)
-    {
-        display = wxString::Format("Nombre de réussites sans changement = %d", successWithoutChange);
-        STNoChangeResult->SetLabel(display);
-        display = wxString::Format("Nombre de réussites avec changement = %d", successWithChange);
-        STChangeResult->SetLabel(display);
-    }
+    successWithoutChange = std::accumulate(VSuccessWithoutChanges.begin(), VSuccessWithoutChanges.end(), 0);
+    successWithChange = std::accumulate(VSuccessWithChanges.begin(), VSuccessWithChanges.end(), 0);
+    VSuccessWithoutChanges.clear();
+    VSuccessWithChanges.clear();
 
+    wxString display = wxString::Format("Nombre de réussites sans changement = %d", successWithoutChange);
+    STNoChangeResult->SetLabel(display);
+    display = wxString::Format("Nombre de réussites avec changement = %d", successWithChange);
+    STChangeResult->SetLabel(display);
+ 
+        
 }
 
 

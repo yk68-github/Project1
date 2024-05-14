@@ -45,7 +45,7 @@ const int Logic::getNumberOfCars()
     return numberOfCars;
 }
 
-void Logic::populateSample(std::vector<int>& s) const
+void Logic::populateSample(std::vector<int>& s)
 {
     s.clear();
     for(int i = 0; i < numberOfGoats; i++)
@@ -66,14 +66,19 @@ std::vector<int> Logic::shuffleSample(std::vector<int> s)
     return s;
 }
 
-bool Logic::executeSimulation(int numberOfSimulations)
+void Logic::executeSimulation(int numberOfSimulations, int& successWithoutChanges, int& successWithChanges)
 {
-  if (numberOfSimulations<=0) return false;
+  if (numberOfSimulations<=0) 
+  {
+      throw std::invalid_argument("Erreur de logique interne au programme.  Le nombre de simulations doit être supérieur à zéro");
+  }
 
-    successWithChanges = 0;
-    failureWithChanges = 0;
-    successWithoutChanges = 0;
-    failureWithoutChanges = 0;
+    srand((int)time(NULL) + successWithChanges);
+    std::mt19937 eng((int)std::time(NULL) + successWithChanges);
+  
+    m_successWithChanges = 0;
+    m_successWithoutChanges = 0;
+
     numberOfDoors = numberOfGoats + numberOfCars;
 
     populateSample(situation);
@@ -94,7 +99,7 @@ bool Logic::executeSimulation(int numberOfSimulations)
             firstChoice = rand()%numberOfDoors;
             if (situation.at(firstChoice)==CAR)
             {
-                successWithoutChanges++;
+                m_successWithoutChanges++;
             }
         }
 
@@ -117,8 +122,11 @@ bool Logic::executeSimulation(int numberOfSimulations)
 
             if (situation.at(newChoice)==CAR)
             {
-                successWithChanges++;
+                m_successWithChanges++;
             }
     }
-   return true;
+        successWithoutChanges = m_successWithoutChanges;
+        successWithChanges = m_successWithChanges;
+        
+   return;
 }

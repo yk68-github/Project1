@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <random>
 #include <ctime>
+#include <wx/log.h>
 
 #define MAXGOATS  8
 #define MINGOATS  2
@@ -19,34 +20,28 @@ class Logic
 {
     public:
         Logic();
-        virtual ~Logic();
+        ~Logic();
 
         void setNumberOfGoats(const int);
         const int getNumberOfGoats();
         void setNumberOfCars(const int);
         const int getNumberOfCars();
         std::vector<int> shuffleSample(std::vector<int> s);
-        const int getSuccessWithChanges() { return successWithChanges; };
-        const int getFailureWithChanges() {return failureWithChanges; };
-        const int getSuccessWithoutChanges() {return successWithoutChanges; };
-        const int getFailureWithoutChanges() {return failureWithoutChanges; };
-        bool executeSimulation(int);
+        void executeSimulation(int, int&, int&);
 
     protected:
 
+    private:
         int numberOfGoats = 2;
         int numberOfCars = 1;
         int numberOfDoors = 3;
-        int successWithChanges = 0;
-        int failureWithChanges = 0;
-        int successWithoutChanges = 0;
-        int failureWithoutChanges = 0;
+        int m_successWithChanges = 0;
+        int m_successWithoutChanges = 0;
+
 
         std::vector<int> sample;
         std::vector<int> situation;
-        void populateSample(std::vector<int>&) const;
-
-    private:
+        void populateSample(std::vector<int>&);
 };
 
 #endif // LOGIC_H

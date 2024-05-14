@@ -25,12 +25,16 @@
 
 #include <string>
 #include <exception>
-#include <wx/log.h>
 #include <vector>
+#include <thread>
+#include <numeric>
+#include <wx/log.h>
 #include <wx/event.h>
+
 #include "Logic.h"
 
 #define OKFORGAUGE 200
+#define PERCENT 100
 
 class MontyFrame: public wxFrame
 {
@@ -81,7 +85,7 @@ class MontyFrame: public wxFrame
         wxStatusBar* StatusBar1;
         //*)
 
-        Logic *logic = nullptr;
+        Logic logic;
         int NumberOfGoats = 0;
         int NumberOfCars = 0;
         void makeTests();
