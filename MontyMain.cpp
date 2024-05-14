@@ -178,9 +178,10 @@ void MontyFrame::makeTests()
     std::vector<std::thread> VThread;
     std::vector<int> VSuccessWithChanges(PERCENT);
     std::vector<int> VSuccessWithoutChanges(PERCENT);
+    
 
     unsigned int numThreads = std::thread::hardware_concurrency();
-
+    
     try
     {
 
@@ -199,9 +200,9 @@ void MontyFrame::makeTests()
                 std::ref(VSuccessWithChanges[indice]));
         }
 */
-            while (indice < (PERCENT-1))
+            while  ((indice < (PERCENT-1)))  //98
             {
-                for (unsigned int j = 0; (j < (numThreads)) && (indice < 100); j++) // tester si i > 100
+                for (unsigned int j = 0; (j < (numThreads)) && (indice < 100); j++) // tester si i < 100
                 {
                     VThread.push_back(
                     std::thread(&Logic::executeSimulation, logic, seed+indice, step, 
@@ -222,7 +223,7 @@ void MontyFrame::makeTests()
             if (numberOfTries - totalSteps > 0)
             {
                 logic.executeSimulation(seed + 1, numberOfTries - totalSteps,
-                    std::ref(VSuccessWithoutChanges[PERCENT - 1]),
+                    std::ref(VSuccessWithoutChanges[PERCENT - 1]), //99
                     std::ref(VSuccessWithChanges[PERCENT - 1]));
             }
     }
@@ -248,13 +249,11 @@ void MontyFrame::makeTests()
     wxString display = wxString::Format("Nombre de réussites sans changement = %d", successWithoutChange);
     STNoChangeResult->SetLabel(display);
     display = wxString::Format("Nombre de réussites avec changement = %d", successWithChange);
-    //display = wxString::Format("step = %d", step);
     STChangeResult->SetLabel(display);
-        
 }
 
 
 void MontyFrame::OnBSimulerClick(wxCommandEvent& event)
 {
-    makeTests();
+        makeTests(); 
 }

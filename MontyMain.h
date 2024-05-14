@@ -91,8 +91,6 @@ class MontyFrame: public wxFrame
         void makeTests();
 
         DECLARE_EVENT_TABLE()
-
-
 };
 
 #endif // MONTYMAIN_H
