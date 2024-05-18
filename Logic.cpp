@@ -95,6 +95,7 @@ void Logic::executeSimulation(int seed, int numberOfSimulations, int& successWit
 
         for(int i = 0; i<numberOfSimulations; i++)
         {
+            srand((int)time(NULL) + seed + i);
             firstChoice = rand()%numberOfDoors;
             if (situation.at(firstChoice)==CAR)
             {

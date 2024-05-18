@@ -191,16 +191,7 @@ void MontyFrame::makeTests()
         step = numberOfTries / PERCENT;
         int totalSteps = 0;
         int indice = 0;
-
-/*
-        for (indice = 0; indice < PERCENT; indice++)
-        {
-            logic.executeSimulation(seed+indice, step,
-                std::ref(VSuccessWithoutChanges[indice]),
-                std::ref(VSuccessWithChanges[indice]));
-        }
-*/
-            while  ((indice < (PERCENT-1)))  //98
+       while  ((indice < (PERCENT-1)))  //98
             {
                 for (unsigned int j = 0; (j < (numThreads)) && (indice < 100); j++) // tester si i < 100
                 {
